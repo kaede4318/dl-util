@@ -49,8 +49,47 @@ def prepare_download_audio(input, output):
     ]
     return cmd
 
+def prepare_download_audio_from_batch_file(input, output):
+    cmd = [
+        "yt-dlp",
+        "-x",
+        "-a", input, # input of links (txt file)
+        "-P", output, # output location
+        "--audio-format", "flac",
+        "--sleep-interval", "5", # sleep needed to avoid IP bans
+        "--max-sleep-interval", "10",
+        "--parse-metadata", "playlist_index:%(track_number)s",
+        "--embed-metadata",
+        "-o", "%(playlist)s/%(title)s", # specify filename/location on top of -P option
+    ]
+    return cmd
+
 # runs yt-dlp command
-def run(command):
+def run(link=None, batch_file=None, output_location="./output/", audio_only=False):
+    # validate inputs
+    if (link is None and batch_file is None) or (link and batch_file):
+        raise ValueError("You must provide exactly one of 'link' or 'batch_file'.")
+    
+    input_path, output_path = Path(batch_file), Path(output_location)
+    if not input_path.is_file():
+        raise FileNotFoundError(str(input_path) + " doesn't exist")
+    elif not output_path.is_dir():
+        raise FileNotFoundError(str(output_path) + " doesn't exist")
+    
+    command = []
+    if link:
+        if audio_only:
+            command = prepare_download_audio(link, output_location)
+        else:
+            command = prepare_download_video(link, output_location)
+    elif batch_file:
+        if audio_only:
+            command = prepare_download_audio_from_batch_file(batch_file, output_location)
+        else:
+            command = prepare_download_video_from_batch_file(batch_file, output_location)
+    else:
+        raise ValueError("Something went wrong")
+
     # stdout=PIPE ~ prints each line as it comes
     p = Popen(
         command, 
@@ -69,15 +108,6 @@ def run(command):
     # proc.kill()       # forcefully stop it
 
 if __name__ == "__main__":
-    INPUT_FILE = "./input/yt_links.txt"
-
-    my_file = Path(INPUT_FILE)
-    if not my_file.is_file():
-        raise FileNotFoundError(str(my_file) + " doesn't exist")
-    
+    INPUT_FILE = "./input/audio_only.txt"
     out = "./output/"
-    # run(prepare_download_video(INPUT_FILE, out))
-    # pl_link = "https://www.youtube.com/playlist?list=PL7h7m34DLvE9dR6FfttZZM2hNSUelfyr2"
-    # pl_link = "https://youtube.com/playlist?list=PL7h7m34DLvE_jY0O0mYDWaFBaLmy3wurJ"
-    # run(prepare_download_video(pl_link, out))
-    run(prepare_download_audio("https://www.youtube.com/playlist?list=PL8sbCrEMTyLlLo3ehFJaLLpJ26FaGsi3O", out))
+    run(batch_file=INPUT_FILE, output_location=out, audio_only=True)
