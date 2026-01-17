@@ -1,5 +1,5 @@
 import shlex
-from cli_to_api import cli_to_api
+from backend.cli_to_api import cli_to_api
 import yt_dlp
 
 yt_cli_string = "yt-dlp -S vcodec:h264,res,acodec:m4a -a \"./input/yt_test.txt\" -P \"./output/\" --sleep-interval 5 --max-sleep-interval 10 --embed-thumbnail --embed-metadata"

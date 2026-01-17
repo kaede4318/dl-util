@@ -70,11 +70,12 @@ def run(link=None, batch_file=None, output_location="./output/", audio_only=Fals
     if (link is None and batch_file is None) or (link and batch_file):
         raise ValueError("You must provide exactly one of 'link' or 'batch_file'.")
     
-    input_path, output_path = Path(batch_file), Path(output_location)
-    if not input_path.is_file():
-        raise FileNotFoundError(str(input_path) + " doesn't exist")
-    elif not output_path.is_dir():
-        raise FileNotFoundError(str(output_path) + " doesn't exist")
+    if batch_file:
+        input_path, output_path = Path(batch_file), Path(output_location)
+        if not input_path.is_file():
+            raise FileNotFoundError(str(input_path) + " doesn't exist")
+        elif not output_path.is_dir():
+            raise FileNotFoundError(str(output_path) + " doesn't exist")
     
     command = []
     if link:
@@ -108,6 +109,7 @@ def run(link=None, batch_file=None, output_location="./output/", audio_only=Fals
     # proc.kill()       # forcefully stop it
 
 if __name__ == "__main__":
-    INPUT_FILE = "./input/audio_only.txt"
+    INPUT = "./input/audio_only.txt"
+    INPUT = "https://youtu.be/Rcru2J3pdU8" 
     out = "./output/"
-    run(batch_file=INPUT_FILE, output_location=out, audio_only=True)
+    run(link=INPUT, output_location=out, audio_only=False)
