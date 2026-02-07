@@ -9,14 +9,36 @@ s = ShellWords()
 env = os.environ.copy()
 env["PATH"] = "/opt/homebrew/bin:" + env["PATH"]  # adjust if necessary
 
-# runs yt-dlp command
-def run(link=None, output_location="./output/"):
-    command = f'yt-dlp -P {output_location} -f "bv[vcodec^=avc1][ext=mp4]+ba[acodec^=mp4a][ext=m4a]/mp4" {link}'
-    command += ' --user-agent "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36"'
-    tokens = s.parse(command) # needed to remove quotes as shell does
+USER_AGENT = (
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+    "AppleWebKit/537.36 (KHTML, like Gecko) "
+    "Chrome/118.0.0.0 Safari/537.36"
+)
 
-    # stdout=PIPE ~ prints each line as it comes
-    p = Popen(tokens, stdout=PIPE, stderr=PIPE, text=True, bufsize=1, env=env)
+# runs yt-dlp command
+def run(link: str, output_location: Path="./output/") -> Path:
+    command = [
+        "yt-dlp",
+        "-o", "/tmp/%(title)s - %(uploader)s [%(id)s].%(ext)s",
+        "-f", "bv[vcodec^=avc1][ext=mp4]+ba[acodec^=mp4a][ext=m4a]/mp4",
+        "--user-agent", USER_AGENT,
+        "--restrict-filenames",
+        "--sleep-interval", "5", # sleep needed to avoid IP bans
+        "--max-sleep-interval", "10", 
+        link,
+    ]
+    # look if you are missing any commas ;)
+    # btw, --restrict-filenames will get rid of non-ASCII characters like CJK characters
+    
+
+    p = Popen(
+        command,
+        stdout=PIPE,
+        stderr=PIPE,
+        text=True,
+        bufsize=1,
+        env=env,
+    )
 
     # Read both stdout and stderr line by line
     for line in p.stdout:
