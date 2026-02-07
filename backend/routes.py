@@ -14,10 +14,6 @@ class LinkData(BaseModel):
 async def say_hello():
     return {"message": "Hello from /api/hello!"}
 
-@router.get("/items/{item_id}")
-async def get_item(item_id: int):
-    return {"item_id": item_id, "description": f"Item {item_id} details"}
-
 @router.post("/submit")
 async def submit_link(data: LinkData):
     # do something with data.link
