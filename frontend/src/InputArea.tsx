@@ -17,27 +17,54 @@ function InputArea() {
         },
     });
 
-    // Function to submit link to backend
-    const submitLink = async (values: { link: string }) => {
+    // Function to submit link to backend and download
+    const downloadLink = async (values: { link: string }) => {
         try {
-            const res = await fetch('http://localhost:8000/api/submit', {
+            const res = await fetch('http://localhost:8000/api/download', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: {'Content-Type': 'application/json',},
                 body: JSON.stringify({ link: values.link }),
             });
 
-            const data = await res.json();
-            setResponse(JSON.stringify(data));
-        } catch (err) {
-            setResponse('Error: ' + err);
+            if (!res.ok) {
+                throw new Error(`HTTP error! status: ${res.status}`);
+            }
+            
+            const blob = await res.blob(); // Convert response to Blob (binary file)
+            const url = window.URL.createObjectURL(blob); // Create object URL for the Blob
+
+            // Create a temporary <a> element to trigger download
+            const a = document.createElement('a');
+            a.href = url;
+
+            // Try to get the filename from the response headers
+            const disposition = res.headers.get('Content-Disposition');
+            let filename = 'video.mp4'; // <<< TODO: change this
+            if (disposition && disposition.includes('filename=')) {
+                filename = disposition
+                .split('filename=')[1]
+                .replace(/["']/g, '')
+                .trim();
+            }
+            a.download = filename;
+
+            // Trigger download
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+
+            // Release the object URL
+            window.URL.revokeObjectURL(url);
+
+            setResponse(`Downloaded ${filename} successfully!`);
+        } catch (err: any) {
+            setResponse('Error: ' + err.message);
         }
     };
 
     return (
         <>
-            <form onSubmit={form.onSubmit(submitLink)}>
+            <form onSubmit={form.onSubmit(downloadLink)}>
                 <Group justify="flex-end" align="flex-start" mt="md">
                     <Box h={72}>
                         <TextInput
@@ -49,10 +76,7 @@ function InputArea() {
                         />
                     </Box>
 
-                    <Button 
-                        type="submit"
-                        size="lg"
-                    >
+                    <Button type="submit" size="lg">
                         <IconDownload size={30} />
                     </Button>
                 </Group>
@@ -60,11 +84,11 @@ function InputArea() {
 
             {response && (
                 <Text mt="sm" color="blue">
-                    Response: {response}
+                    {response}
                 </Text>
             )}
         </>
     );
 }
 
-export default InputArea
+export default InputArea;

@@ -56,7 +56,7 @@ def run(link: str) -> Path:
     with open(tmp_path, "r") as f:
         final_filename = f.read().strip()
     
-    os.unlink(tmp_path)
+    os.unlink(tmp_path) # remove after queue full
 
     return Path(final_filename)
 

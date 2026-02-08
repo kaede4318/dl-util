@@ -1,5 +1,5 @@
 import '@mantine/core/styles.css';
-import { MantineProvider, Button, Text } from '@mantine/core';
+import { MantineProvider} from '@mantine/core';
 
 import InputArea from "./InputArea.tsx";
 import './App.css';

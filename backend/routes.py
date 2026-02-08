@@ -1,7 +1,8 @@
 # routes.py
 from fastapi import APIRouter
-from fastapi.responses import JSONResponse
+from fastapi.responses import FileResponse
 from pydantic import BaseModel
+from pathlib import Path
 
 from downloader import run
 
@@ -14,8 +15,16 @@ class LinkData(BaseModel):
 async def say_hello():
     return {"message": "Hello from /api/hello!"}
 
-@router.post("/submit")
-async def submit_link(data: LinkData):
-    # do something with data.link
-    return {"received": data.link, "message": "Link submitted successfully"}
+@router.post("/download")
+async def download_link(data: LinkData):
+    print(f"Download request for link: {data.link}")  # log every request
+    fp = run(data.link) # download video
+    print("name",fp.name)
+
+    return FileResponse(
+        path=str(fp), 
+        filename=fp.name,
+        media_type="video/mp4",
+        headers={"Cache-Control": "no-store"}
+    )
 
