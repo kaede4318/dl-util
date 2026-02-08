@@ -3,10 +3,12 @@ from pathlib import Path
 from shellwords import ShellWords
 import tempfile
 import os
+import sys
 
 CWD = os.getcwd()
-s = ShellWords()
+s = ShellWords() # not using this for now (?)
 
+# set env so running yt-dlp commands here will be able to share same environment as shell
 env = os.environ.copy()
 env["PATH"] = "/opt/homebrew/bin:" + env["PATH"]  # adjust if necessary
 
@@ -17,14 +19,14 @@ USER_AGENT = (
 )
 
 # runs yt-dlp command
-def run(link: str) -> Path:
+def run(link: str, out_dir: str="/tmp/dl/") -> Path:
     # Create a unique temporary file for this download
     with tempfile.NamedTemporaryFile(delete=False) as tmp_file:
         tmp_path = tmp_file.name
         
     command = [
         "yt-dlp",
-        "-o", "/tmp/dl/%(title)s - %(uploader)s [%(id)s].%(ext)s",
+        "-o", f"{out_dir}/%(title)s - %(uploader)s [%(id)s].%(ext)s",
         "-f", "bv[vcodec^=avc1][ext=mp4]+ba[acodec^=mp4a][ext=m4a]/mp4",
         "--user-agent", USER_AGENT,
         "--restrict-filenames",
@@ -63,7 +65,7 @@ def run(link: str) -> Path:
 
 if __name__ == "__main__":
     # testing
-    INPUT = "https://www.youtube.com/watch?v=cTDK5Bluh5A" 
-    jeffbeck = "https://www.youtube.com/watch?v=WNNkbE6EU3w" 
+    arg = sys.argv[1]
+
     out = "./output/"
-    run(link=jeffbeck)
+    run(link=arg)
