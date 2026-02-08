@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 import logging, os
 
-from routes import router  # <-- import your router
+from routes import router
 
 # Logging
 LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO").upper()
@@ -25,10 +25,11 @@ app = FastAPI(title="My Service", version="0.1.0", lifespan=lifespan)
 
 # Mount routes under /api
 app.include_router(router, prefix="/api")
+
 # CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173/"],  # your frontend URL
+    allow_origins=["http://localhost:5173"],  # frontend URL make sure there's no trailing backslash - TODO: REPLACE THIS
     allow_methods=["*"],
     allow_headers=["*"],
 )
