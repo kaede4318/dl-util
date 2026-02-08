@@ -1,15 +1,19 @@
 import '@mantine/core/styles.css';
-import { MantineProvider} from '@mantine/core';
+import { MantineProvider, RemoveScroll, Box } from '@mantine/core';
 
 import InputArea from "./InputArea.tsx";
 import './App.css';
 
 function App() {
-  return (
-    <MantineProvider>
-      <InputArea />
-    </MantineProvider>
-  );
+    return (
+        <MantineProvider>
+            <RemoveScroll>
+                <Box sx={{ alignItems: "center"}}>
+                    <InputArea />
+                </Box>
+            </RemoveScroll>
+        </MantineProvider>
+    );
 }
 
 export default App;

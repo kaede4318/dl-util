@@ -1,4 +1,4 @@
-import { Button, Group, TextInput, Box, Text } from '@mantine/core';
+import { Button, Group, TextInput, Text } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { useState } from 'react';
 import { IconDownload } from '@tabler/icons-react';
@@ -67,18 +67,17 @@ function InputArea() {
     return (
         <>
             <form onSubmit={form.onSubmit(downloadLink)}>
-                <Group justify="flex-end" align="flex-start" mt="md">
-                    <Box h={72}>
-                        <TextInput
-                            w={600}
-                            size="lg"
-                            placeholder="enter your link here"
-                            key={form.key('link')}
-                            {...form.getInputProps('link')}
-                        />
-                    </Box>
+                <Group justify="center" align="flex-start" mt="md">
+                    <TextInput
+                        size="md"
+                        placeholder="enter your link here"
+                        key={form.key('link')}
+                        {...form.getInputProps('link')}
+                        sx={{ flex: 1, minWidth: 0 }}
+                        w="60vw"
+                    />
 
-                    <Button type="submit" size="lg">
+                    <Button type="submit" size="md">
                         <IconDownload size={30} />
                     </Button>
                 </Group>
