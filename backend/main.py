@@ -29,7 +29,8 @@ app.include_router(router, prefix="/api")
 # CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],  # frontend URL make sure there's no trailing backslash - TODO: REPLACE THIS
+    allow_origins=["*"],  # frontend URL make sure there's no trailing backslash - TODO: REPLACE THIS
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )

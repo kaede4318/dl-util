@@ -3,6 +3,8 @@ import { useForm } from '@mantine/form';
 import { useState } from 'react';
 import { IconDownload } from '@tabler/icons-react';
 
+import { API_BASE_URL } from "./config/api";
+
 function InputArea() {
     const [response, setResponse] = useState<string | null>(null);
 
@@ -20,7 +22,7 @@ function InputArea() {
     // Function to submit link to backend and download
     const downloadLink = async (values: { link: string }) => {
         try {
-            const res = await fetch('http://localhost:8000/api/download', {
+            const res = await fetch(`${API_BASE_URL}/api/download`, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json',},
                 body: JSON.stringify({ link: values.link }),
