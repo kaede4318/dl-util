@@ -62,11 +62,11 @@ function InputArea() {
             if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
 
             const blob = await res.blob(); // convert response to Blob (binary file)
-            const url = window.URL.createObjectURL(blob); // create object URL for the Blo
+            const url = window.URL.createObjectURL(blob); // create object URL for the blob
 
             // Try to get the filename from the response headers
             const disposition = res.headers.get('Content-Disposition');
-            const filename = getFilenameFromDisposition(disposition) ?? 'video.mp4';
+            const filename = getFilenameFromDisposition(disposition) ?? 'video.mp4'; // fall back on video.mp4
 
             // Create a temporary <a> element to trigger download
             const a = document.createElement('a');
@@ -90,7 +90,7 @@ function InputArea() {
     return (
         <>
             <form onSubmit={form.onSubmit(downloadLink)}>
-                <Group justify="center" align="flex-start" mt="md">
+                <Group justify="center" align="flex-start" wrap="nowrap" mt="md" maw="700px">
                     <TextInput
                         size="md"
                         placeholder="enter your link here"
@@ -101,8 +101,14 @@ function InputArea() {
                         disabled={isDownloading} // disable input while downloading
                     />
 
-                    <Button type="submit" size="md" disabled={isDownloading}>
-                        {isDownloading ? <Loader size="sm" /> : <IconDownload size={30} />}
+                    <Button 
+                        type="submit" 
+                        size="md"
+                        loading={isDownloading ? true : undefined} 
+                        loaderProps={{ type: 'dots' }}  
+                        disabled={isDownloading}
+                    >
+                        <IconDownload size={"20"} /> {/* how to make the icon scale with button size??? */}
                     </Button>
                 </Group>
             </form>
