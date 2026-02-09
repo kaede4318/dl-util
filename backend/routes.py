@@ -25,6 +25,6 @@ async def download_link(data: LinkData):
         path=str(fp), 
         filename=fp.name,
         media_type="video/mp4",
-        headers={"Cache-Control": "no-store"}
+        headers={ "Cache-Control": "no-store" }
     )
 

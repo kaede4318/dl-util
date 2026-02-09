@@ -5,6 +5,35 @@ import { IconDownload } from '@tabler/icons-react';
 
 import { API_BASE_URL } from "./config/api";
 
+// helper function to parse Disposition header
+function getFilenameFromDisposition(disposition: string | null) {
+    if (!disposition) return null;
+
+    // RFC 5987: filename*
+    const filenameStarMatch = disposition.match(/filename\*\s*=\s*([^;]+)/i);
+    if (filenameStarMatch) {
+        const value = filenameStarMatch[1].trim();
+
+        // expected format: utf-8''<url-encoded>
+        const parts = value.split("''", 2);
+        if (parts.length === 2) {
+            try {
+                return decodeURIComponent(parts[1]);
+            } catch {
+                return parts[1]; // fallback if decoding fails
+            }
+        }
+    }
+
+    // Basic filename
+    const filenameMatch = disposition.match(/filename\s*=\s*("?)([^";]+)\1/i);
+    if (filenameMatch) {
+        return filenameMatch[2];
+    }
+
+    return null;
+}
+
 function InputArea() {
     const [response, setResponse] = useState<string | null>(null);
     const [isDownloading, setIsDownloading] = useState(false); // loading state
@@ -35,21 +64,19 @@ function InputArea() {
             const blob = await res.blob(); // convert response to Blob (binary file)
             const url = window.URL.createObjectURL(blob); // create object URL for the Blo
 
+            // Try to get the filename from the response headers
+            const disposition = res.headers.get('Content-Disposition');
+            const filename = getFilenameFromDisposition(disposition) ?? 'video.mp4';
+
             // Create a temporary <a> element to trigger download
             const a = document.createElement('a');
             a.href = url;
-
-            // Try to get the filename from the response headers
-            const disposition = res.headers.get('Content-Disposition');
-            let filename = 'video.mp4'; // <<< TODO: change this
-            if (disposition && disposition.includes('filename=')) {
-                filename = disposition.split('filename=')[1].replace(/["']/g, '').trim();
-            }
             a.download = filename;
 
             document.body.appendChild(a); // trigger download
             a.click();
             a.remove();
+
             window.URL.revokeObjectURL(url); // release obj URL
 
             setResponse(`Downloaded ${filename} successfully!`);
