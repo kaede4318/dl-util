@@ -1,3 +1,4 @@
 deps:
-yt-dlp
-mutagen - for metadata
+- yt-dlp
+- mutagen - for metadata
+
