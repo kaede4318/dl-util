@@ -1,4 +1,5 @@
 deps:
-- yt-dlp
-- mutagen - for metadata
+- yt-dlp (brew)
+- mutagen (brew) - for metadata
+
 
